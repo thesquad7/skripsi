@@ -1,0 +1,6 @@
+opencv-python
+fastapi
+pillow
+joblib
+uvicorn
+mediapipe
