@@ -3,15 +3,24 @@ import mediapipe as mp
 import numpy as np
 import joblib
 
-model_file = ""
+mp_face_mesh = mp.solutions.face_mesh
+
+model_file = "trained_XGBoost_model_learning_rate=0.2_max_depth=7_n_estimators=300.joblib"
 model_folder = "model/"
 
 
 model_filename =  model_folder+model_file
 model = joblib.load(model_filename)
 
+def get_unique(connections):
+    indices = set()
+    for connection in connections:
+        indices.update(connection)
+    return sorted(indices)
+face_maps = mp_face_mesh.FACEMESH_FACE_OVAL | mp_face_mesh.FACEMESH_LEFT_EYEBROW | mp_face_mesh.FACEMESH_RIGHT_EYEBROW | mp_face_mesh.FACEMESH_NOSE | mp_face_mesh.FACEMESH_LIPS
+face_model = get_unique(face_maps)
 
-mp_face_mesh = mp.solutions.face_mesh
+
 face_mesh = mp_face_mesh.FaceMesh(static_image_mode=True, max_num_faces=1, min_detection_confidence=0.5)
 
 
@@ -20,9 +29,9 @@ def get_face_landmarks(image):
     if results.multi_face_landmarks:
         face_landmarks = results.multi_face_landmarks[0]
         landmarks = []
-        for lm in face_landmarks.landmark:
-            x = int(lm.x * image.width)
-            y = int(lm.y * image.height)
+        for index in face_model:
+            x = int(index.x * image.width)
+            y = int(index.y * image.height)
             landmarks.extend([x, y])
         return landmarks, face_landmarks
     else:

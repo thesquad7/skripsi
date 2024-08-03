@@ -19,7 +19,7 @@ async def detecting_bell(
     contents = await file.read()
     image = Image.open(BytesIO(contents))
 
-    # Get face landmarks
+
     face_landmarks, mp_face_landmarks = get_face_landmarks(image)
     if not face_landmarks:
         return JSONResponse(status_code=400, content={"message": "No face detected"})
