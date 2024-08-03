@@ -1,6 +1,8 @@
 opencv-python
 fastapi
+python-multipart
 pillow
 joblib
 uvicorn
 mediapipe
+xgboost

@@ -1,12 +1,13 @@
 import cv2
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse,FileResponse
 from pydantic import BaseModel
+
 from datetime import datetime
 from io import BytesIO
 from PIL import Image
 import base64
-from ml_operator import get_face_landmarks,draw_landmarks,detect_face_similarity,model
+from ml_operator import get_face_landmarks,draw_landmarks,detect_face_similarity,model,dataX
 
 app = FastAPI()
 
@@ -18,19 +19,12 @@ async def detecting_bell(
 ):
     contents = await file.read()
     image = Image.open(BytesIO(contents))
-
-
     face_landmarks, mp_face_landmarks = get_face_landmarks(image)
     if not face_landmarks:
         return JSONResponse(status_code=400, content={"message": "No face detected"})
-
-    # Get similarity percentage
     similarity_percentage = detect_face_similarity(model, face_landmarks)
-
-    # Draw landmarks on the image
-    image_with_landmarks = draw_landmarks(image, mp_face_landmarks)
-
-    # Encode image to base64
+    image_with_landmarks = draw_landmarks(image)
+    # print(face_landmarks)
     _, buffer = cv2.imencode('.png', image_with_landmarks)
     img_str = base64.b64encode(buffer).decode('utf-8')
 
